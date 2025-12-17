@@ -17,17 +17,11 @@
 #include "Profiler.h"
 
 #pragma comment (lib, "winmm.lib")
-#include <locale.h>
-#include <fcntl.h>
-#include <io.h>
 
 
 int main()
 {
     timeBeginPeriod(1);
-
-    _setmode(_fileno(stdin), _O_U16TEXT);   // 입력을 UTF-16으로 설정
-    _setmode(_fileno(stdout), _O_U16TEXT);  // 출력을 UTF-16으로 설정
 
     CEchoServer server;
     CEchoContent content;
@@ -65,3 +59,4 @@ int main()
 
 
 }
+
