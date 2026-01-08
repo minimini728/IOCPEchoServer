@@ -4,14 +4,14 @@
 #include <iostream>
 #include <emmintrin.h>
 
-RingBuffer::RingBuffer() :_bufferSize(1000000), _buffer(new char[_bufferSize]), _head(0), _rear(0)
+RingBuffer::RingBuffer() :_bufferSize(100000), _buffer(new char[_bufferSize]), _head(0), _rear(0)
 {
 
 }
 
 RingBuffer::~RingBuffer()
 {
-	//wprintf(L"~ringbuffer È£ÃâµÊ\n");
+	//wprintf(L"~ringbuffer í˜¸ì¶œë¨\n");
 	delete[](_buffer);
 }
 
@@ -30,34 +30,6 @@ int RingBuffer::GetBufferSize()
 
 int RingBuffer::GetUseSize()
 {
-	//int retValue;
-	//bool isFirst = true;
-
-	//unsigned int rear = _rear;
-	//unsigned int head = _head;
-
-	//if (rear >= head)
-	//{
-	//	retValue = rear - head;
-	//}
-	//else
-	//{
-	//	isFirst = false;
-	//	retValue = _bufferSize - (head - rear);
-	//}
-
-	//if (retValue < 0 || retValue > _bufferSize)
-	//{
-	//	printf("[GetUseSize] _head: %d\t _rear: %d\t _bufferSize: %d\t retValue: %d\n", head, rear, _bufferSize, retValue);
-	//	printf("isFirst: %d\n", isFirst);
-	//	DebugBreak();
-	//}
-
-	//return retValue;
-	//unsigned int head = _head;
-	//unsigned int rear = _rear;
-	//unsigned int size = _bufferSize;
-
 	return (_rear + _bufferSize - _head) % _bufferSize;
 }
 
@@ -73,37 +45,10 @@ int RingBuffer::GetFreeSize()
 	return retValue;
 }
 
-//int RingBuffer::Enqueue(const char* data, int size)
-//{
-//	int freeSize = GetFreeSize();
-//	if (size > freeSize)
-//		size = freeSize;
-//
-//	int firstCopySize;
-//	if (size < _bufferSize - _rear)
-//		firstCopySize = size;
-//	else
-//		firstCopySize = _bufferSize - _rear;
-//
-//	memcpy(_buffer + _rear, data, firstCopySize);
-//
-//	int remainSize = size - firstCopySize;
-//	if (remainSize > 0)
-//	{
-//		memcpy(_buffer, data + firstCopySize, remainSize);
-//	}
-//
-//	_rear = (_rear + size) % _bufferSize;
-//
-//	return size;
-//}
-
 int RingBuffer::Enqueue(const char* data, int size)
 {
 	int freeSize = GetFreeSize();
 	unsigned int rear = _rear;
-	//if (size > freeSize)
-	//	size = freeSize;
 
 	if (size > freeSize)
 	{
@@ -133,44 +78,11 @@ int RingBuffer::Enqueue(const char* data, int size)
 	return size;
 }
 
-//int RingBuffer::Dequeue(char* dest, int size)
-//{
-//	int useSize = GetUseSize();
-//	if (size > useSize)
-//		size = useSize;
-//
-//	int firstCopySize;
-//	if (size < _bufferSize - _head)
-//		firstCopySize = size;
-//	else
-//		firstCopySize = _bufferSize - _head;
-//
-//	memcpy(dest, _buffer + _head, firstCopySize);
-//
-//	int remainSize = size - firstCopySize;
-//	if (remainSize > 0)
-//	{
-//		memcpy(dest + firstCopySize, _buffer, remainSize);
-//	}
-//
-//	_head = (_head + size) % _bufferSize;
-//
-//	// ¹öÆÛ°¡ ºñ¸é 0À¸·Î ÃÊ±âÈ­
-//	//if (_head == _rear)
-//	//{
-//	//	_head = _rear = 0;
-//	//}
-//
-//	return size;
-//}
-
 int RingBuffer::Dequeue(char* dest, int size)
 {
 	unsigned int head = _head;
 
 	int useSize = GetUseSize();
-	//if (size > useSize)
-	//	size = useSize;
 
 	if (size > useSize)
 	{
@@ -197,7 +109,7 @@ int RingBuffer::Dequeue(char* dest, int size)
 
 	_head = (head + size) % _bufferSize;
 
-	// ¹öÆÛ°¡ ºñ¸é 0À¸·Î ÃÊ±âÈ­
+	// ë²„í¼ê°€ ë¹„ë©´ 0ìœ¼ë¡œ ì´ˆê¸°í™”
 	//if (_head == _rear)
 	//{
 	//	_head = _rear = 0;
@@ -269,7 +181,7 @@ void RingBuffer::PrintBuffer()
 	for (int i = 0; i < useSize; i++)
 	{
 		std::cout << (int)_buffer[index] << " ";
-		index = (index + 1) % _bufferSize;  // ¿øÇü ±¸Á¶ Àû¿ë
+		index = (index + 1) % _bufferSize;  // ì›í˜• êµ¬ì¡° ì ìš©
 	}
 
 	std::cout << std::endl;
@@ -299,7 +211,7 @@ int RingBuffer::DirectEnqueueSize(void)
 	if (rear >= head)
 	{
 		if (head == 0)
-			return _bufferSize - rear - 1; // full ¹öÆÛ ±¸ºĞÀ» À§ÇØ ÇÑ Ä­ ºñ¿öµÒ
+			return _bufferSize - rear - 1; // full ë²„í¼ êµ¬ë¶„ì„ ìœ„í•´ í•œ ì¹¸ ë¹„ì›Œë‘ 
 		else
 			return _bufferSize - rear;
 	}
@@ -319,4 +231,5 @@ int RingBuffer::DirectDequeueSize(void)
 		return rear - head;
 	else
 		return _bufferSize - head;
+
 }
