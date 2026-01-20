@@ -569,13 +569,6 @@ void CLanServer::ReleaseSession(Session* session)
 		// 컨텐츠에 연결 끊김 알리기
 		OnRelease(session->sessionId);
 
-		// empty 스택에 넣기
-		AcquireSRWLockExclusive(&_srwlEmptyStack);
-		int index = static_cast<int>(session->sessionId >> 32);
-		_emptySessionIndex.push(index);
-		ReleaseSRWLockExclusive(&_srwlEmptyStack);
-
-
 		closesocket(session->sock);
 		session->sock = INVALID_SOCKET;
 
@@ -585,6 +578,13 @@ void CLanServer::ReleaseSession(Session* session)
 		session->flagSend = 0;
 		session->recvQ.ClearBuffer();
 		session->sendQ.ClearBuffer();
+		
+		// empty 스택에 넣기
+		AcquireSRWLockExclusive(&_srwlEmptyStack);
+		int index = static_cast<int>(session->sessionId >> 32);
+		_emptySessionIndex.push(index);
+		ReleaseSRWLockExclusive(&_srwlEmptyStack);
+
 	}
 
 }
@@ -784,3 +784,4 @@ void CLanServer::PostRecv(Session* ptr)
 	}
 
 }
+
